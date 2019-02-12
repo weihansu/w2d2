@@ -13,7 +13,7 @@ const urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.render("index");
 });
 
 app.get('/urls.json', (req, res) => {
@@ -54,8 +54,7 @@ app.post("/urls", (req, res) => {
   let newLongURL = req.body.longURL;
   let newShortURL = generateRandomString();
   urlDatabase[newShortURL] = newLongURL;
-  console.log(urlDatabase);
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  res.redirect("/urls/" + newShortURL);
 });
 
 app.listen(PORT, () => {
