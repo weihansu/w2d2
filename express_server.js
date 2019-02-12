@@ -17,8 +17,21 @@ app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
+app.get("/urls", (req, res) => {
+  let templateVars = { urls: urlDatabase};
+  res.render("urls_index", templateVars);
+});
+
+// route hello
 app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  let templateVars = { greeting: 'Hello World!' };
+  res.render("hello_world", templateVars);
+});
+
+// route urls/short_urls
+app.get("/urls/:shortURL", (req, res) => {
+  let templateVars = { shortURL: req.params.shortURL, longURL: 'qualquer coisa' };
+  res.render("urls_show", templateVars);
 });
 
 app.listen(PORT, () => {
