@@ -32,16 +32,21 @@ app.get("/hello", (req, res) => {
   res.render("hello_world", templateVars);
 });
 
+// route new url
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
 // route urls/short_urls
 app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL];
-  // let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
   res.render("urls_show", {
     shortURL: shortURL,
     longURL: longURL
   });
 });
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
