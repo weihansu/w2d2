@@ -57,6 +57,14 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/" + newShortURL);
 });
 
+// route to redirect
+app.get("/u/:shortURL", (req, res) => {
+  let templateVars = urlDatabase;
+  let shortURL = req.params.shortURL;
+  let longURL = templateVars[shortURL];
+  res.redirect(longURL);
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
