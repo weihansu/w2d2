@@ -9,6 +9,13 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
+  <% include ../partials/_header %>
+  <h2>My URLs</h2>
+  <ul>
+    <% urlsKeys.forEach(function(tinyUrl){ %>
+    <li><%= tinyUrl %>: <%= templateVars[tinyUrl] %></li>
+  <% }) %>
+  </ul>
 
 </body>
 </html>

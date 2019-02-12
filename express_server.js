@@ -18,8 +18,12 @@ app.get('/urls.json', (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase};
-  res.render("urls_index", templateVars);
+  let templateVars = urlDatabase;
+  let urlsKeys = Object.keys(urlDatabase);
+  res.render("urls_index", {
+    urlsKeys: urlsKeys,
+    templateVars: templateVars
+  });
 });
 
 // route hello
