@@ -34,8 +34,13 @@ app.get("/hello", (req, res) => {
 
 // route urls/short_urls
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: 'qualquer coisa' };
-  res.render("urls_show", templateVars);
+  let shortURL = req.params.shortURL;
+  let longURL = urlDatabase[shortURL];
+  // let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase };
+  res.render("urls_show", {
+    shortURL: shortURL,
+    longURL: longURL
+  });
 });
 
 app.listen(PORT, () => {
