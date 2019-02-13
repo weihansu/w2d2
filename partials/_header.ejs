@@ -1,5 +1,19 @@
 <header>
-  <h2><a href="/">TinyApp</a></h2>
-  <p><a href="/urls/new">Create New TinyURL</a></p>
-  <p><a href="/urls">Show all URLs</a></p>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin-bottom: 1em">
+    <a class="navbar-brand" href="/">TinyApp</a>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/urls/new">Create New TinyURL</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/urls">Show all URLs</a>
+        </li>
+      </ul>
+    </div>
+      <form class="form-inline">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </nav>
 </header>
