@@ -69,6 +69,16 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/" + newShortURL);
 });
 
+app.post('/urls/:shortURL', (req, res) => {
+  let newLongURL = req.body.longURL;
+  let shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = newLongURL;
+  res.render("urls_show", {
+    shortURL: shortURL,
+    longURL: newLongURL
+  });
+});
+
 app.post('/urls/:shortURL/delete', (req, res) => {
   let shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
