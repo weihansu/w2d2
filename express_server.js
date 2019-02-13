@@ -12,10 +12,12 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//route index
 app.get("/", (req, res) => {
   res.render("index");
 });
 
+// route to test urlDatabase
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
@@ -50,13 +52,6 @@ app.get("/urls/:shortURL", (req, res) => {
   });
 });
 
-app.post("/urls", (req, res) => {
-  let newLongURL = req.body.longURL;
-  let newShortURL = generateRandomString();
-  urlDatabase[newShortURL] = newLongURL;
-  res.redirect("/urls/" + newShortURL);
-});
-
 // route to redirect
 app.get("/u/:shortURL", (req, res) => {
   let templateVars = urlDatabase;
@@ -64,6 +59,22 @@ app.get("/u/:shortURL", (req, res) => {
   let longURL = templateVars[shortURL];
   res.redirect(longURL);
 });
+
+
+// POST
+app.post("/urls", (req, res) => {
+  let newLongURL = req.body.longURL;
+  let newShortURL = generateRandomString();
+  urlDatabase[newShortURL] = newLongURL;
+  res.redirect("/urls/" + newShortURL);
+});
+
+app.post('/urls/:shortURL/delete', (req, res) => {
+  let shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect('/urls')
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

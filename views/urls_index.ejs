@@ -14,8 +14,14 @@
   <ul>
     <% urlsKeys.forEach(function(tinyUrl){ %>
     <li><%= tinyUrl %>: <a href=<%= templateVars[tinyUrl] %>><%= templateVars[tinyUrl] %></a></li>
+    <form method="POST" action="/urls/<%= tinyUrl %>/delete">
+        <button type="submit">Delete
+        </button>
+    </form>
+
   <% }) %>
   </ul>
 
 </body>
 </html>
+
