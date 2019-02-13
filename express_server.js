@@ -3,9 +3,12 @@ const app = express();
 const PORT = 8080;
 
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
+
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs");
+app.use(cookieParser());
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -85,6 +88,17 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls')
 });
 
+app.post('/login', (req, res) => {
+  let username = req.body.username;
+
+  console.log('Username: ', username);
+
+  res.cookie('username', username, {expire : new Date() + 9999});
+  console.log('Cookies: ', req.cookies);
+  // res.send(`Username ${username} , Cookies: ${req.cookies}`)
+  res.redirect('/urls')
+
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
