@@ -11,15 +11,24 @@
 <body style="font-size:20px; padding:50px;">
   <% include ../partials/_header %>
   <h2>My URLs</h2>
-  <ul>
-    <% urlsKeys.forEach(function(tinyUrl){ %>
-    <li><%= tinyUrl %>: <a href=<%= templateVars[tinyUrl] %>><%= templateVars[tinyUrl] %></a></li>
-    <form method="POST" action="/urls/<%= tinyUrl %>/delete">
-        <button type="submit">Delete
-        </button>
-    </form>
-
-  <% }) %>
+  <ul class="list-inline">
+    <div>
+      <% urlsKeys.forEach(function(tinyUrl){ %>
+        <div class="row" style="margin: 0.5em">
+          <div class="col-md-4">
+            <li><%= tinyUrl %>: <a href=<%= templateVars[tinyUrl] %>><%= templateVars[tinyUrl] %></a></li>
+          </div>
+          <div class="col-md-1">
+            <p><a href="/urls/<%= tinyUrl %>">Edit</a></p>
+          </div>
+          <div class="col-md-2">
+            <form method="POST" action="/urls/<%= tinyUrl %>/delete">
+            <button type="submit" class="btn btn-primary">Delete</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
   </ul>
 
 </body>
