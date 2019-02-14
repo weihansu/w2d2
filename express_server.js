@@ -34,6 +34,14 @@ const getUsername = (x => {
     }
 });
 
+function verifyEmail(email) {
+  for (let id in users) {
+      if (users[id]['email'] === email) {
+          return true;
+      }
+  }
+};
+
 function generateRandomString(n) {
   return Math.random().toString(36).substr(2, n);
 };
@@ -144,15 +152,21 @@ app.post('/register', (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
   let id = generateRandomString(2);
-  users[id] = {
-    id: id,
-    email: email,
-    password: password
+
+  if (email === '' || password === '') {
+    return res.status(400).send('Empty Email or Password does not accept');
+  } else if (verifyEmail(email)) {
+    return res.status(400).send('Email already exist!');
+  } else {
+      users[id] = {
+        id: id,
+        email: email,
+        password: password
+      };
+
+    res.cookie('id', id, {expire : new Date() + 9999});
+    res.redirect('/urls')
   }
-
-  res.cookie('id', id, {expire : new Date() + 9999});
-
-  res.redirect('/urls')
 });
 
 app.listen(PORT, () => {
