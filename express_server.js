@@ -15,14 +15,27 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 const getUsername = (x => {
     if(x) {
       return x
     }
 });
 
-function generateRandomString() {
-  return Math.random().toString(36).substr(2, 6);
+function generateRandomString(n) {
+  return Math.random().toString(36).substr(2, n);
 };
 
 //route index
@@ -93,7 +106,7 @@ app.get('/register', (req, res) => {
 // POST
 app.post("/urls", (req, res) => {
   let newLongURL = req.body.longURL;
-  let newShortURL = generateRandomString();
+  let newShortURL = generateRandomString(6);
   urlDatabase[newShortURL] = newLongURL;
   res.redirect("/urls/" + newShortURL);
 });
@@ -128,7 +141,18 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  res.send('OK')
+  let email = req.body.email;
+  let password = req.body.password;
+  let id = generateRandomString(2);
+  users[id] = {
+    id: id,
+    email: email,
+    password: password
+  }
+
+  res.cookie('id', id, {expire : new Date() + 9999});
+
+  res.redirect('/urls')
 });
 
 app.listen(PORT, () => {
