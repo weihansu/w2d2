@@ -97,7 +97,12 @@ app.get("/hello", (req, res) => {
 // route new url
 app.get("/urls/new", (req, res) => {
   let email = existEmail(req.cookies.id);
-  res.render("urls_new", {email: email});
+
+  if(email) {
+    res.render("urls_new", {email: email});
+  } else {
+    res.redirect('/login');
+  }
 });
 
 // route urls/short_urls
