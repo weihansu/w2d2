@@ -36,6 +36,7 @@ app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
+// route to url
 app.get("/urls", (req, res) => {
   let username = getUsername(req.cookies.username);
   let templateVars = urlDatabase;
@@ -80,6 +81,14 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+// route to /register
+app.get('/register', (req, res) => {
+  let username = getUsername(req.cookies.username);
+  res.render('registration', {
+    username: username
+  })
+});
+
 
 // POST
 app.post("/urls", (req, res) => {
@@ -116,6 +125,10 @@ app.post('/login', (req, res) => {
 app.post('/logout', (req, res) => {
   res.clearCookie('username')
   res.redirect('/urls')
+});
+
+app.post('/register', (req, res) => {
+  res.send('OK')
 });
 
 app.listen(PORT, () => {
