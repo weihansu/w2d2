@@ -42,12 +42,22 @@ const existEmail = (id => {
   }
 });
 
-function verifyEmail(email) {
+function verifyField(field, verify) {
   for (let id in users) {
-      if (users[id]['email'] === email) {
+    // console.log(id)
+      if (users[id][field] === verify) {
           return true;
       }
   }
+};
+
+function getIdByEmail(email) {
+  for (let id in users) {
+    if (users[id]['email'] === email) {
+      return id;
+    }
+  }
+  return false
 };
 
 function generateRandomString(n) {
@@ -68,10 +78,6 @@ app.get('/urls.json', (req, res) => {
 // route to url
 app.get("/urls", (req, res) => {
   let email = existEmail(req.cookies.id);
-  // console.log(id);
-  // let email = users[id]['email'];
-  console.log(email);
-
   let templateVars = urlDatabase;
   let urlsKeys = Object.keys(urlDatabase);
   res.render("urls_index", {
@@ -80,7 +86,6 @@ app.get("/urls", (req, res) => {
     email: email
 
   });
-  // res.send(email)
 });
 
 // route hello
@@ -153,23 +158,35 @@ app.post('/urls/:shortURL', (req, res) => {
   });
 });
 
+// POST DELETE URL
 app.post('/urls/:shortURL/delete', (req, res) => {
   let shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect('/urls')
 });
 
+// POST LOGIN
 app.post('/login', (req, res) => {
-  let username = req.body.username;
-  res.cookie('username', username, {expire : new Date() + 9999});
-  res.redirect('/urls')
+  let email = req.body.email;
+  let password = req.body.password;
+
+  if(verifyField('email', email) &&  verifyField('password', password)) {
+    let cookieValue = getIdByEmail(email)
+    res.cookie('id', cookieValue, {expire : new Date() + 9999});
+    res.redirect('/urls')
+  } else {
+    res.status(403).send('Email or Password wrong!');
+  }
 });
 
+// POST LOGOUT
 app.post('/logout', (req, res) => {
   res.clearCookie('id')
+  // console.log(users)
   res.redirect('/urls')
 });
 
+// POST REGISTER
 app.post('/register', (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
@@ -177,7 +194,7 @@ app.post('/register', (req, res) => {
 
   if (email === '' || password === '') {
     return res.status(400).send('Empty Email or Password does not accept');
-  } else if (verifyEmail(email)) {
+  } else if (verifyField('email', email)) {
     return res.status(400).send('Email already exist!');
   } else {
       users[id] = {
@@ -187,6 +204,7 @@ app.post('/register', (req, res) => {
       };
 
     res.cookie('id', id, {expire : new Date() + 9999});
+    // console.log('REGISTER', users)
     res.redirect('/urls')
   }
 });
