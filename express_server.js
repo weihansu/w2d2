@@ -21,6 +21,10 @@ const getUsername = (x => {
     }
 });
 
+function generateRandomString() {
+  return Math.random().toString(36).substr(2, 6);
+};
+
 //route index
 app.get("/", (req, res) => {
   let username = getUsername(req.cookies.username);
@@ -105,20 +109,15 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 app.post('/login', (req, res) => {
   let username = req.body.username;
-
-  console.log('Username: ', username);
-
   res.cookie('username', username, {expire : new Date() + 9999});
-  console.log('Cookies: ', req.cookies);
-  // res.send(`Username ${username} , Cookies: ${req.cookies}`)
   res.redirect('/urls')
+});
 
+app.post('/logout', (req, res) => {
+  res.clearCookie('username')
+  res.redirect('/urls')
 });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-function generateRandomString() {
-  return Math.random().toString(36).substr(2, 6);
-}
