@@ -28,10 +28,18 @@ const users = {
   }
 };
 
-const getUsername = (x => {
+const existCookie = (x => {
     if(x) {
-      return x
+      return x;
     }
+});
+
+const existEmail = (id => {
+  if(existCookie(id)) {
+    return users[id]['email'];
+  } else {
+    return false
+  }
 });
 
 function verifyEmail(email) {
@@ -48,8 +56,8 @@ function generateRandomString(n) {
 
 //route index
 app.get("/", (req, res) => {
-  let username = getUsername(req.cookies.username);
-  res.render('index', {username: username});
+  let email = existEmail(req.cookies.id);
+  res.render('index', {email: email});
 });
 
 // route to test urlDatabase
@@ -59,15 +67,20 @@ app.get('/urls.json', (req, res) => {
 
 // route to url
 app.get("/urls", (req, res) => {
-  let username = getUsername(req.cookies.username);
+  let email = existEmail(req.cookies.id);
+  // console.log(id);
+  // let email = users[id]['email'];
+  console.log(email);
+
   let templateVars = urlDatabase;
   let urlsKeys = Object.keys(urlDatabase);
   res.render("urls_index", {
     urlsKeys: urlsKeys,
     templateVars: templateVars,
-    username: username
+    email: email
 
   });
+  // res.send(email)
 });
 
 // route hello
@@ -78,19 +91,19 @@ app.get("/hello", (req, res) => {
 
 // route new url
 app.get("/urls/new", (req, res) => {
-  let username = getUsername(req.cookies.username);
-  res.render("urls_new", {username: username});
+  let email = existEmail(req.cookies.id);
+  res.render("urls_new", {email: email});
 });
 
 // route urls/short_urls
 app.get("/urls/:shortURL", (req, res) => {
-  let username = getUsername(req.cookies.username);
+  let email = existEmail(req.cookies.id);
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL];
   res.render("urls_show", {
     shortURL: shortURL,
     longURL: longURL,
-    username: username
+    email: email
   });
 });
 
@@ -104,12 +117,21 @@ app.get("/u/:shortURL", (req, res) => {
 
 // route to /register
 app.get('/register', (req, res) => {
-  let username = getUsername(req.cookies.username);
+  let email = existEmail(req.cookies.id);
   res.render('registration', {
-    username: username
+    email: email
   })
 });
 
+// route to /login
+app.get('/login', (req, res) => {
+  let email = existEmail(req.cookies.id);
+  res.render('login', {
+    email: email
+  })
+});
+
+// END of GET
 
 // POST
 app.post("/urls", (req, res) => {
@@ -120,14 +142,14 @@ app.post("/urls", (req, res) => {
 });
 
 app.post('/urls/:shortURL', (req, res) => {
-  let username = getUsername(req.cookies.username);
+  let email = existEmail(req.cookies.id);
   let newLongURL = req.body.longURL;
   let shortURL = req.params.shortURL;
   urlDatabase[shortURL] = newLongURL;
   res.render("urls_show", {
     shortURL: shortURL,
     longURL: newLongURL,
-    username: username
+    email: email
   });
 });
 
@@ -144,7 +166,7 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username')
+  res.clearCookie('id')
   res.redirect('/urls')
 });
 
