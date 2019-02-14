@@ -15,9 +15,16 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const getUsername = (x => {
+    if(x) {
+      return x
+    }
+});
+
 //route index
 app.get("/", (req, res) => {
-  res.render("index");
+  let username = getUsername(req.cookies.username);
+  res.render('index', {username: username});
 });
 
 // route to test urlDatabase
@@ -26,11 +33,14 @@ app.get('/urls.json', (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  let username = getUsername(req.cookies.username);
   let templateVars = urlDatabase;
   let urlsKeys = Object.keys(urlDatabase);
   res.render("urls_index", {
     urlsKeys: urlsKeys,
-    templateVars: templateVars
+    templateVars: templateVars,
+    username: username
+
   });
 });
 
@@ -42,16 +52,19 @@ app.get("/hello", (req, res) => {
 
 // route new url
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let username = getUsername(req.cookies.username);
+  res.render("urls_new", {username: username});
 });
 
 // route urls/short_urls
 app.get("/urls/:shortURL", (req, res) => {
+  let username = getUsername(req.cookies.username);
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL];
   res.render("urls_show", {
     shortURL: shortURL,
-    longURL: longURL
+    longURL: longURL,
+    username: username
   });
 });
 
@@ -73,12 +86,14 @@ app.post("/urls", (req, res) => {
 });
 
 app.post('/urls/:shortURL', (req, res) => {
+  let username = getUsername(req.cookies.username);
   let newLongURL = req.body.longURL;
   let shortURL = req.params.shortURL;
   urlDatabase[shortURL] = newLongURL;
   res.render("urls_show", {
     shortURL: shortURL,
-    longURL: newLongURL
+    longURL: newLongURL,
+    username: username
   });
 });
 
