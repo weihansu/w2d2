@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const PORT = 8080;
+const bcrypt = require('bcrypt');
 
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
@@ -57,6 +58,15 @@ function verifyField(field, verify) {
   }
 };
 
+function verifyPassword(pass) {
+  for (let id in users) {
+    let encriptedPass = users[id]['password'];
+      if (bcrypt.compareSync(pass, encriptedPass)) {
+          return true;
+      }
+  }
+};
+
 function getIdByEmail(email) {
   for (let id in users) {
     if (users[id]['email'] === email) {
@@ -104,7 +114,6 @@ app.get("/urls", (req, res) => {
   let userID = req.cookies.id;
   let email = existEmail(userID);
   let personalData = urlsForUser(userID);
-  console.log('PersonalData: ', personalData);
 
   if (Object.keys(personalData).length > 0) {
     let urlsKeys = Object.keys(personalData);
@@ -201,7 +210,6 @@ app.post('/urls/:shortURL', (req, res) => {
     longURL: newLongURL,
     email: email
   });
-  console.log(urlDatabase)
 });
 
 // POST DELETE URL
@@ -224,7 +232,7 @@ app.post('/login', (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
 
-  if(verifyField('email', email) &&  verifyField('password', password)) {
+  if(verifyField('email', email) &&  verifyPassword(password)) {
     let cookieValue = getIdByEmail(email)
     res.cookie('id', cookieValue, {expire : new Date() + 9999});
     res.redirect('/urls')
@@ -243,6 +251,7 @@ app.post('/logout', (req, res) => {
 app.post('/register', (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   let id = generateRandomString(2);
 
   if (email === '' || password === '') {
@@ -253,7 +262,7 @@ app.post('/register', (req, res) => {
       users[id] = {
         id: id,
         email: email,
-        password: password
+        password: hashedPassword
       };
 
     res.cookie('id', id, {expire : new Date() + 9999});
