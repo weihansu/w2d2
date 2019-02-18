@@ -5,11 +5,17 @@ const bcrypt = require('bcrypt');
 
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-
-app.use(bodyParser.urlencoded({extended: true}));
+const cookieSession = require('cookie-session');
 
 app.set("view engine", "ejs");
+
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['long secret here'],
+  maxAge: 24 * 60 * 60 * 1000
+}))
 
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
@@ -93,7 +99,7 @@ function generateRandomString(n) {
 
 //route index
 app.get("/", (req, res) => {
-  let id = req.cookies.id
+  let id = req.session.user_id
   let email = existEmail(id);
   res.render('index', {email: email});
 });
@@ -111,7 +117,7 @@ app.get('/urls.json', (req, res) => {
 
 // route to url
 app.get("/urls", (req, res) => {
-  let userID = req.cookies.id;
+  let userID = req.session.user_id;
   let email = existEmail(userID);
   let personalData = urlsForUser(userID);
 
@@ -129,7 +135,7 @@ app.get("/urls", (req, res) => {
 
 // route new url
 app.get("/urls/new", (req, res) => {
-  let email = existEmail(req.cookies.id);
+  let email = existEmail(req.session.user_id);
 
   if(email) {
     res.render("urls_new", {email: email});
@@ -140,7 +146,7 @@ app.get("/urls/new", (req, res) => {
 
 // route urls/short_urls
 app.get("/urls/:shortURL", (req, res) => {
-  let userID = req.cookies.id;
+  let userID = req.session.user_id;
   let email = existEmail(userID);
   let shortURL = req.params.shortURL;
 
@@ -168,7 +174,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 // route to /register
 app.get('/register', (req, res) => {
-  let email = existEmail(req.cookies.id);
+  let email = existEmail(req.session.user_id);
   res.render('registration', {
     email: email
   })
@@ -176,7 +182,7 @@ app.get('/register', (req, res) => {
 
 // route to /login
 app.get('/login', (req, res) => {
-  let email = existEmail(req.cookies.id);
+  let email = existEmail(req.session.user_id);
   res.render('login', {
     email: email
   })
@@ -186,7 +192,7 @@ app.get('/login', (req, res) => {
 
 // POST
 app.post("/urls", (req, res) => {
-  let userID = req.cookies.id;
+  let userID = req.session.user_id;
   let newLongURL = req.body.longURL;
   let newShortURL = generateRandomString(6);
   urlDatabase[newShortURL] = {
@@ -197,7 +203,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.post('/urls/:shortURL', (req, res) => {
-  let userID = req.cookies.id;
+  let userID = req.session.user_id;
   let email = existEmail(userID);
   let newLongURL = req.body.longURL;
   let shortURL = req.params.shortURL;
@@ -215,7 +221,7 @@ app.post('/urls/:shortURL', (req, res) => {
 // POST DELETE URL
 app.post('/urls/:shortURL/delete', (req, res) => {
 
-  let userID = req.cookies.id;
+  let userID = req.session.user_id;
   let shortURL = req.params.shortURL;
   let personalData = urlsForUser(userID);
 
@@ -243,7 +249,9 @@ app.post('/login', (req, res) => {
 
 // POST LOGOUT
 app.post('/logout', (req, res) => {
-  res.clearCookie('id')
+  res.clearCookie('session');
+  res.clearCookie('session.sig');
+  // req.session = null
   res.redirect('/urls')
 });
 
@@ -264,8 +272,7 @@ app.post('/register', (req, res) => {
         email: email,
         password: hashedPassword
       };
-
-    res.cookie('id', id, {expire : new Date() + 9999});
+    req.session.user_id = id;
     res.render("urls_new", {email: email});
   }
 });
