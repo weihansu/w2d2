@@ -20,7 +20,7 @@ app.use(cookieSession({
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
-  teste: { longURL: "https://www.google.ca", userID: "sfdfd" },
+  test: { longURL: "https://www.google.ca", userID: "sfdfd" },
   ds: { longURL: "https://www.google.ca2", userID: "userRandomID" },
   dsds: { longURL: "https://www.google.ca3", userID: "userRandomID" },
   dsffe: { longURL: "https://www.google.ca5", userID: "userRandomID" }
@@ -51,13 +51,12 @@ const existEmail = (id => {
   if(ifExist(id)) {
     return users[id]['email'];
   } else {
-    return false
+    return false;
   }
 });
 
 function verifyField(field, verify) {
   for (let id in users) {
-    // console.log(id)
       if (users[id][field] === verify) {
           return true;
       }
@@ -79,11 +78,11 @@ function getIdByEmail(email) {
       return id;
     }
   }
-  return false
+  return false;
 };
 
 function urlsForUser(id) {
-  let copyURL = urlDatabase;
+  let copyURL = JSON.parse(JSON.stringify(urlDatabase));
   for (url in copyURL) {
     let cutURL = copyURL[url]
     if (cutURL.userID !== id) {
@@ -99,9 +98,14 @@ function generateRandomString(n) {
 
 //route index
 app.get("/", (req, res) => {
-  let id = req.session.user_id
+  let id = req.session.user_id;
   let email = existEmail(id);
-  res.render('index', {email: email});
+
+  if(email) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 // route hello
@@ -114,6 +118,10 @@ app.get("/hello", (req, res) => {
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
+app.get('/users.json', (req, res) => {
+  res.json(users);
+});
+
 
 // route to url
 app.get("/urls", (req, res) => {
@@ -129,7 +137,7 @@ app.get("/urls", (req, res) => {
       email: email
     });
   } else {
-    res.redirect('/login')
+    res.redirect('/login');
   }
 });
 
@@ -149,7 +157,6 @@ app.get("/urls/:shortURL", (req, res) => {
   let userID = req.session.user_id;
   let email = existEmail(userID);
   let shortURL = req.params.shortURL;
-
   let personalData = urlsForUser(userID);
 
   if (Object.keys(personalData).length > 0 && personalData.hasOwnProperty(shortURL)) {
@@ -166,10 +173,17 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // route to redirect
 app.get("/u/:shortURL", (req, res) => {
-  let templateVars = urlDatabase;
+  let userID = req.session.user_id;
+  let email = existEmail(userID);
   let shortURL = req.params.shortURL;
-  let longURL = templateVars[shortURL];
-  res.redirect(longURL);
+  let personalData = urlsForUser(userID);
+
+  if (Object.keys(personalData).length > 0 && personalData.hasOwnProperty(shortURL)) {
+    let longURL = personalData[shortURL]['longURL'];
+    res.redirect(longURL);
+  } else {
+    res.status(403).send('You are not allowed to access this URL');
+  }
 });
 
 // route to /register
@@ -190,11 +204,12 @@ app.get('/login', (req, res) => {
 
 // END of GET
 
-// POST
+// POST CREATE NEM URL
 app.post("/urls", (req, res) => {
   let userID = req.session.user_id;
   let newLongURL = req.body.longURL;
   let newShortURL = generateRandomString(6);
+
   urlDatabase[newShortURL] = {
     longURL: newLongURL,
     userID: userID
@@ -240,7 +255,7 @@ app.post('/login', (req, res) => {
 
   if(verifyField('email', email) &&  verifyPassword(password)) {
     let cookieValue = getIdByEmail(email)
-    res.cookie('id', cookieValue, {expire : new Date() + 9999});
+    req.session.user_id = cookieValue;
     res.redirect('/urls')
   } else {
     res.status(403).send('Email or Password wrong!');
@@ -249,10 +264,8 @@ app.post('/login', (req, res) => {
 
 // POST LOGOUT
 app.post('/logout', (req, res) => {
-  res.clearCookie('session');
-  res.clearCookie('session.sig');
-  // req.session = null
-  res.redirect('/urls')
+  req.session = null;
+  res.redirect('/urls');
 });
 
 // POST REGISTER
@@ -261,6 +274,7 @@ app.post('/register', (req, res) => {
   let password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
   let id = generateRandomString(2);
+  req.session.user_id = id;
 
   if (email === '' || password === '') {
     return res.status(400).send('Empty Email or Password does not accept');
@@ -268,11 +282,10 @@ app.post('/register', (req, res) => {
     return res.status(400).send('Email already exist!');
   } else {
       users[id] = {
-        id: id,
+        id: req.session.user_id,
         email: email,
         password: hashedPassword
       };
-    req.session.user_id = id;
     res.render("urls_new", {email: email});
   }
 });
