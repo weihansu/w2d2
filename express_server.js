@@ -61,7 +61,7 @@ function verifyField(field, verify) {
           return true;
       }
   }
-};
+}
 
 function verifyPassword(pass) {
   for (let id in users) {
@@ -70,7 +70,7 @@ function verifyPassword(pass) {
           return true;
       }
   }
-};
+}
 
 function getIdByEmail(email) {
   for (let id in users) {
@@ -79,14 +79,14 @@ function getIdByEmail(email) {
     }
   }
   return false;
-};
+}
 
 function urlsForUser(id) {
   let copyURL = JSON.parse(JSON.stringify(urlDatabase));
   for (url in copyURL) {
     let cutURL = copyURL[url]
     if (cutURL.userID !== id) {
-      delete copyURL[url]
+      delete copyURL[url];
     }
   }
   return copyURL;
@@ -94,7 +94,7 @@ function urlsForUser(id) {
 
 function generateRandomString(n) {
   return Math.random().toString(36).substr(2, n);
-};
+}
 
 //route index
 app.get("/", (req, res) => {
