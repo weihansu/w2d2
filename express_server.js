@@ -173,17 +173,9 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // route to redirect
 app.get("/u/:shortURL", (req, res) => {
-  let userID = req.session.user_id;
-  let email = existEmail(userID);
   let shortURL = req.params.shortURL;
-  let personalData = urlsForUser(userID);
-
-  if (Object.keys(personalData).length > 0 && personalData.hasOwnProperty(shortURL)) {
-    let longURL = personalData[shortURL]['longURL'];
-    res.redirect(longURL);
-  } else {
-    res.status(403).send('You are not allowed to access this URL');
-  }
+  let longURL = urlDatabase[shortURL]['longURL'];
+  res.redirect(longURL);
 });
 
 // route to /register
