@@ -39,6 +39,9 @@ const users = {
   }
 };
 
+/**
+ * If id exists, return his email, otherwise false
+ */
 const existEmail = (id => {
   if(id) {
     return users[id]['email'];
@@ -47,6 +50,9 @@ const existEmail = (id => {
   }
 });
 
+/**
+ * Compare a specific field in users database
+ */
 function verifyField(field, verify) {
   for (let id in users) {
       if (users[id][field] === verify) {
@@ -55,6 +61,9 @@ function verifyField(field, verify) {
   }
 }
 
+/**
+ * Loop through users and use bcrypt to compare password, return true if at least has one match
+ */
 function verifyPassword(pass) {
   for (let id in users) {
     let encriptedPass = users[id]['password'];
@@ -64,6 +73,9 @@ function verifyPassword(pass) {
   }
 }
 
+/**
+ * Given a user's email, return his id or false
+ */
 function getIdByEmail(email) {
   for (let id in users) {
     if (users[id]['email'] === email) {
@@ -73,6 +85,9 @@ function getIdByEmail(email) {
   return false;
 }
 
+/**
+ * Return a copy of urlDatabase given an user
+ */
 function urlsForUser(id) {
   let copyURL = JSON.parse(JSON.stringify(urlDatabase));
   for (url in copyURL) {
@@ -84,6 +99,10 @@ function urlsForUser(id) {
   return copyURL;
 }
 
+/**
+ * Return alpha-numeric string
+ * @param {n} digits in return
+ */
 function generateRandomString(n) {
   return Math.random().toString(36).substr(2, n);
 }
@@ -180,8 +199,8 @@ app.get('/login', (req, res) => {
     email: email
   })
 });
-
 // END of GET
+
 
 // POST CREATE NEM URL
 app.post("/urls", (req, res) => {
