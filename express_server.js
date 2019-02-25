@@ -39,16 +39,8 @@ const users = {
   }
 };
 
-const ifExist = (x => {
-    if(x) {
-      return x;
-    } else {
-      return false;
-    }
-});
-
 const existEmail = (id => {
-  if(ifExist(id)) {
+  if(id) {
     return users[id]['email'];
   } else {
     return false;
@@ -243,7 +235,7 @@ app.post('/login', (req, res) => {
   if(verifyField('email', email) &&  verifyPassword(password)) {
     let cookieValue = getIdByEmail(email)
     req.session.user_id = cookieValue;
-    res.redirect('/urls')
+    res.redirect('/urls');
   } else {
     res.status(403).send('Email or Password wrong!');
   }
