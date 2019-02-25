@@ -108,13 +108,8 @@ app.get("/", (req, res) => {
   }
 });
 
-// route hello
-app.get("/hello", (req, res) => {
-  let templateVars = { greeting: 'Hello World!' };
-  res.render("hello_world", templateVars);
-});
 
-// route to test urlDatabase
+// routes to test Databases
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
