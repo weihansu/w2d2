@@ -16,7 +16,7 @@
       <% urlsKeys.forEach(function(tinyUrl){ %>
         <div class="row" style="margin: 0.5em">
           <div class="col-md-4">
-            <li><%= tinyUrl %>: <a href=<%= templateVars[tinyUrl] %>><%= templateVars[tinyUrl]['longURL'] %></a></li>
+            <li><%= tinyUrl %>: <a href=<%= templateVars[tinyUrl]['longURL'] %>><%= templateVars[tinyUrl]['longURL'] %></a></li>
           </div>
           <div class="col-md-1">
             <p><a href="/urls/<%= tinyUrl %>">Edit</a></p>
